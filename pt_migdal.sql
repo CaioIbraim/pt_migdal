@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 04-Jul-2018 às 20:18
+-- Generation Time: 04-Jul-2018 às 20:50
 -- Versão do servidor: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -497,6 +497,7 @@ CREATE TABLE `notification_share` (
   `id_notification_share` smallint(4) UNSIGNED ZEROFILL NOT NULL,
   `id_user_share` smallint(4) NOT NULL,
   `id_notification` smallint(4) NOT NULL,
+  `share_to` smallint(4) NOT NULL COMMENT 'Person who will recive the shared notificaiton',
   `dt_share` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -504,10 +505,10 @@ CREATE TABLE `notification_share` (
 -- Extraindo dados da tabela `notification_share`
 --
 
-INSERT INTO `notification_share` (`id_notification_share`, `id_user_share`, `id_notification`, `dt_share`) VALUES
-(0001, 1, 1, NULL),
-(0002, 3, 1, '2018-07-04'),
-(0003, 2, 1, '2018-07-04');
+INSERT INTO `notification_share` (`id_notification_share`, `id_user_share`, `id_notification`, `share_to`, `dt_share`) VALUES
+(0001, 1, 1, 1, NULL),
+(0002, 3, 1, 1, '2018-07-04'),
+(0003, 2, 1, 1, '2018-07-04');
 
 -- --------------------------------------------------------
 
