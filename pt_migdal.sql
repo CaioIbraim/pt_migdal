@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 04-Jul-2018 às 20:50
+-- Generation Time: 05-Jul-2018 às 19:13
 -- Versão do servidor: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -26,6 +26,21 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_next_entities` (IN `lat` VARCHAR(20), IN `lng` VARCHAR(20))  NO SQL
+SELECT id_entity,name,adress,phone,
+    (6371 * acos(
+     cos( radians(lat) )
+     * cos( radians( latitude ) )
+     * cos( radians( longitude ) - radians(lng) )
+     + sin( radians(lat) )
+     * sin( radians( latitude ) ) 
+     )
+    ) AS distancia
+    FROM entity
+    HAVING distancia < 25
+    ORDER BY distancia ASC
+    LIMIT 4$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `login_save` (INOUT `id_user` SMALLINT(4), INOUT `email` VARCHAR(300), INOUT `password` VARCHAR(200))  NO SQL
 INSERT INTO login VALUES(NULL,id_user, email, password)$$
 
@@ -354,7 +369,8 @@ CREATE TABLE `division` (
 --
 
 INSERT INTO `division` (`id`, `name`, `id_state`, `type`, `latitude`, `longitude`, `code`, `calling_code`) VALUES
-(1, 'São Gonçalo', 1, 0, NULL, NULL, NULL, NULL);
+(1, 'São Gonçalo', 1, 0, NULL, NULL, NULL, NULL),
+(2, 'Rio de Janeiro - Capital', 1, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -376,9 +392,75 @@ CREATE TABLE `division_type` (
 CREATE TABLE `entity` (
   `id_entity` smallint(4) NOT NULL,
   `id_country` smallint(4) NOT NULL,
-  `name` varchar(20) NOT NULL,
+  `id_state` smallint(4) NOT NULL,
+  `id_division` smallint(4) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `adress` varchar(120) DEFAULT NULL,
+  `latitude` varchar(20) DEFAULT NULL,
+  `longitude` varchar(20) DEFAULT NULL,
   `level` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `entity`
+--
+
+INSERT INTO `entity` (`id_entity`, `id_country`, `id_state`, `id_division`, `phone`, `name`, `adress`, `latitude`, `longitude`, `level`) VALUES
+(1, 30, 1, 2, '3399-5000', '1º DP - Praca Maua', 'Praca Maua, 5 / 2º andar', '-22.89689201492272', '-43.181939011533174', 1),
+(2, 30, 1, 2, '3399-5010', '4º DP - Central do Brasil', 'Praca da Republica, 111', '-22.908204656334945', '-43.189726340133738', 1),
+(3, 30, 1, 2, '3399-5050', '5º DP - Mem de Sa', 'Avenida Gomes Freire, 320', '-22.91002475104688', '-43.18427475346305', 1),
+(4, 30, 1, 2, '3399-5020', '6º DP - Cidade Nova', 'Rua Professor Clementino Fraga, 77', '-22.908809061883034', '-43.196120313721458', 1),
+(5, 30, 1, 2, '3399-5070', '7º DP - Santa Tereza', 'Rua Francisco de Castro, 5', '-22.924227386071106', '-43.187198346907543', 1),
+(6, 30, 1, 2, '3399-7110', '10º DP - Botafogo', 'Rua Bambina, 140', '-22.947831925894256', '-43.186127100944091', 1),
+(7, 30, 1, 2, '3399-7070', '12º DP - Copacabana', 'Rua Hilario de Gouveia, 102', '-22.967471352060244', '-43.184405483303081', 1),
+(8, 30, 1, 2, '3399-7090', '13º DP - Ipanema', 'Avenida Nossa Senhora de Copacabana, 1.260', '-22.982748680436462', '-43.191039526132364', 1),
+(9, 30, 1, 2, '3399-7040', '15º DP - Gavea', 'Rua Major Rubens Vaz, 170', '-22.972272086599475', '-43.22579377845301', 1),
+(10, 30, 1, 2, '3399-7140', '16º DP - Barra da Tijuca', 'Rua General Ivan Raposo, s/no', '-23.012318446161331', '-43.31412709650192', 1),
+(11, 30, 1, 2, '3399-7120', '14º DP - Leblon', 'Rua Humberto de Campos, 315', '-22.981721630719452', '-43.218567738610297', 1),
+(12, 30, 1, 2, '3399-5030', '17º DP - Sao Cristovao', 'Rua Sao Cristovao, 309', '-22.904364983320033', '-43.218658805948913', 1),
+(13, 30, 1, 2, '3399-5040', '18º DP - Praca da Bandeira', 'Rua Barao de Iguatemi, 331', '-22.913150011696583', '-43.214362010777954', 1),
+(14, 30, 1, 2, '3399-5080', '19º DP - Tijuca', 'Rua General Espirito Santo Cardoso, 208', '-22.930567999675262', '-43.244645000257478', 1),
+(15, 30, 1, 2, '3399-5090', '20º DP - Vila Isabel', 'Rua Leopoldo, 280', '-22.927736062409874', '-43.251957095048844', 1),
+(16, 30, 1, 2, '3399-6110', '21º DP - Bonsucesso', 'Avenida dos Democraticos, 1322', '-22.872621931308874', '-43.258261572020665', 1),
+(17, 30, 1, 2, '3399-6220', '22º DP - Penha', 'Avenida Lobo Junior, 750', '-22.827971526414924', '-43.276036763474494', 1),
+(18, 30, 1, 2, '3399-6330', '23º DP - Meier', 'Rua Aristides Caire, 80', '-22.899012744093714', '-43.277823547606118', 1),
+(19, 30, 1, 2, '3399-6250', '25º DP - Engenho Novo', 'Rua Vinte e Quatro de Maio, 983', '-22.903171320088727', '-43.268942635658831', 1),
+(20, 30, 1, 2, '3399-6260', '24º DP - Todos os Santos', 'Rua Adriano, 304', '-22.902410334387991', '-43.290264764192408', 1),
+(21, 30, 1, 2, '3399-6270', '27º DP - Vicente de Carvalho', 'Avenida Meriti, 486', '-22.853449010340146', '-43.307873186192097', 1),
+(22, 30, 1, 2, '3399-6280', '28º DP - Campinho', 'Rua Candido Benicio, 727', '-22.889293930212183', '-43.346041584379265', 1),
+(23, 30, 1, 2, '3399-6290', '29º DP - Madureira', 'Avenida Ministro Edgard Romero, 227', '-22.871422303222822', '-43.336164920267642', 1),
+(24, 30, 1, 2, '3399-6300', '30º DP - Marechal Hermes', 'Rua General Oswaldo Cordeiro de Faria, 340', '-22.864307586912563', '-43.373362268060689', 1),
+(25, 30, 1, 2, '3393-5211', '37º DP - Ilha do Governador', 'Estrada do Galeao, 1.365', '-22.808278860278545', '-43.196699662478871', 1),
+(26, 30, 1, 2, '3399-6380', '38º DP - Irajá', 'Avenida Bras de Pina, 1.115', '-22.84077156406908', '-43.301150725174175', 1),
+(27, 30, 1, 2, '3399-6400', '40º DP - Honorio Gurgel', 'Rua Guarama, 40 - n. porta= 15', '-22.840554622847311', '-43.348987086233002', 1),
+(28, 30, 1, 2, '3399-5640', '34º DP - Bangu', 'Rua Sabogi, 51', '-22.874479121935515', '-43.463077847920573', 1),
+(29, 30, 1, 2, '3399-7160', '32º DP - Jacarepagua', 'Rua Henriqueta, 197', '-22.919706860812365', '-43.358551013496609', 1),
+(30, 30, 1, 2, '3399-5650', '35º DP - Campo Grande', 'Avenida Maria Tereza, Lt 8/9/10', '-22.90431021646009', '-43.566445214975943', 1),
+(31, 30, 1, 2, '3399-6390', '39º DP - Pavuna', 'Rua Sargento de Milicias, s/n', '-22.805223844715723', '-43.363733819498158', 1),
+(32, 30, 1, 2, '3399-6310', '31º DP - Ricardo de Albuquerque', 'Avenida Marechal Alencastro, 4933 - QD. B', '-22.824634987326444', '-43.403440041258492', 1),
+(33, 30, 1, 2, '3399-5630', '33º DP - Realengo', 'Rua Bernardo de Vasconcelos,  1780', '-22.875713385925671', '-43.436878883915199', 1),
+(34, 30, 1, 2, '3399-5660', '36º DP - Santa Cruz', 'Avenida Dom Joao VI, 67', '-22.914418876394272', '-43.684424614720001', 1),
+(35, 30, 1, 2, '2259-9477', 'DAS - Divisao Anti-Sequestro', 'Avenida Afranio de Melo Franco, 159 - Leblon', '-22.981717741924744', '-43.21835840049647', 1),
+(36, 30, 1, 2, '2399-3780', 'DC Polinter - Divisao de Captura de Policia', 'Rua Silvino Montenegro, 1 / 2º andar - Gamboa', '-22.893213118028935', '-43.190738091793023', 1),
+(37, 30, 1, 2, '2399-3671', 'DDEF - Delegacia de Defraudacoes', 'Rua Silvino Montenegro, 1 / 4º andar - Gamboa', '-22.893292179462968', '-43.190766788243423', 1),
+(38, 30, 1, 2, '2399-3690', 'DEAM Rio - Delegacia Especial de Atendimento a Mulher', 'Rua Silvino Montenegro, 1 / 3º andar - Gamboa', '-22.893359238281644', '-43.190778645491022', 1),
+(39, 30, 1, 2, '2224-4493', 'DEAC - Delegacia Especial de Acervo Cartorário', 'Rua do Lavradio, 155 - Lapa', '-22.912563052578484', '-43.181872683300988', 1),
+(40, 30, 1, 2, '2232-1262', 'DEAM Rio-Oeste - Delegacia Especial de Atendimento a Mulher', 'Avenida Cesario de Mello, 4.138 - Campo Grande', '-22.906864937767537', '-43.571377969172644', 1),
+(41, 30, 1, 2, '2232-1262', 'DEAPTI - Delegacia Especial de Atendimento a Pessoas da Terceira Idade', 'Rua da Relacao, 42 - terreo - Centro', '-22.910257821574284', '-43.184381512351962', 1),
+(42, 30, 1, 2, '2399-7170', 'DEAT - Delegacia de Atendimento ao Turista', 'Avenida Afranio de Mello Franco, s/n - Leblon', '-22.981714910778191', '-43.218346854840377', 1),
+(43, 30, 1, 2, '2399-3658', 'DELFAZ - Delegacia  de Policia Fazendaria', 'Rua Silvino Montenegro, 1 / 4º andar - Gamboa', '-22.893394065756635', '-43.190790361317966', 1),
+(44, 30, 1, 2, '2399-3250', 'DELTRAN - Delegacia Especial de Transito', 'Rua Silvino Montenegro, 1 / 4º andar - Gamboa', '-22.893170757344272', '-43.19073153113299', 1),
+(45, 30, 1, 2, '2399--3680', 'DPCA - Delegacia de Protecao a Crianca e ao Adolescente', 'Rua Benedito Hipolito, 163 / 2º andar - Cidade Nova', '-22.908913692185536', '-43.198841878463888', 1),
+(46, 30, 1, 2, '2242-1938', 'DH - Delegacia de Homicidios', 'Rua da Relacao, 42 / 7º andar - Centro', '-22.910226838361755', '-43.184301359628044', 1),
+(47, 30, 1, 2, '2399-7191', 'DMMA - Delegacia Movel de Meio Ambiente', 'Praca Desembargador Araujo Jorge, s/n', '-23.010872335433177', '-43.29690341400358', 1),
+(48, 30, 1, 2, '2399-3372', 'DRCCSP - Delegacia de Repressao a Crimes contra a Saude Publica', 'Avenida Graca Aranha, 169 - terreo - Centro', '-22.908222697441985', '-43.174783799203972', 1),
+(49, 30, 1, 2, '3399-3201', 'DRCI - Delegacia de Repressao aos Crimes de Informatica', 'Rua da Relacao, 42 / 8º andar - Centro', '-22.910277051001977', '-43.184281723809285', 1),
+(50, 30, 1, 2, '2399-3291', 'DRE - Delegacia de Repressao a Entorpecentes', 'Avenida Suburbana, 6.860 - Piedade', '-22.881877366632754', '-43.295183743090156', 1),
+(51, 30, 1, 2, '2233-2701', 'DRF - Delegacia de Roubos e Furtos', 'Praca Maua, 5 - Centro', '-22.896882092914908', '-43.181935588079313', 1),
+(52, 30, 1, 2, '2399-3800', 'DRFC - Delegacia de Roubos e Furtos de Cargas', 'Praca Alencastro Guimaraes, 86 - Pavuna', '-22.817071312030386', '-43.354743976978362', 1),
+(53, 30, 1, 2, '2399-3638', 'DRFVAT - Delegacia de Roubos e Furtos de Veiculos', 'Rua Celio Nascimento, 33 - Benfica', '-22.888909521857038', '-43.235972665677181', 1),
+(54, 30, 1, 2, '2399-3024', 'DSD - Delegacia Supervisora de Dia', 'Rua da Relacao, 42 - terreo - Centro', '-22.910293662009337', '-43.184339133252571', 1);
 
 -- --------------------------------------------------------
 
@@ -970,6 +1052,25 @@ INSERT INTO `religion` (`id`, `code`, `name`, `heritage`, `area_of_origin`, `fou
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `show_states_entities`
+-- (See below for the actual view)
+--
+CREATE TABLE `show_states_entities` (
+`id_entity` smallint(4)
+,`id_country` smallint(4)
+,`id_state` smallint(4)
+,`id_division` smallint(4)
+,`phone` varchar(20)
+,`name` varchar(100)
+,`adress` varchar(120)
+,`latitude` varchar(20)
+,`longitude` varchar(20)
+,`level` int(2)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `state`
 --
 
@@ -1081,6 +1182,15 @@ DROP TABLE IF EXISTS `most_popular_offences`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `most_popular_offences`  AS  select `offence`.`id_offence` AS `id_offence`,`offence`.`id_country` AS `id_country`,`offence`.`crime_code` AS `crime_code`,`offence`.`description` AS `description`,`offence`.`level_1` AS `level_1`,`offence`.`level_2` AS `level_2`,`offence`.`level_3` AS `level_3`,`offence`.`level_4` AS `level_4`,`offence`.`level_5` AS `level_5`,`offence`.`notes` AS `notes` from `offence` where ((`offence`.`id_country` = 30) and (`offence`.`level_1` is not null)) ;
 
+-- --------------------------------------------------------
+
+--
+-- Structure for view `show_states_entities`
+--
+DROP TABLE IF EXISTS `show_states_entities`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `show_states_entities`  AS  select `entity`.`id_entity` AS `id_entity`,`entity`.`id_country` AS `id_country`,`entity`.`id_state` AS `id_state`,`entity`.`id_division` AS `id_division`,`entity`.`phone` AS `phone`,`entity`.`name` AS `name`,`entity`.`adress` AS `adress`,`entity`.`latitude` AS `latitude`,`entity`.`longitude` AS `longitude`,`entity`.`level` AS `level` from `entity` where (`entity`.`id_state` = 1) ;
+
 --
 -- Indexes for dumped tables
 --
@@ -1104,7 +1214,8 @@ ALTER TABLE `criminal_organization`
 --
 ALTER TABLE `division`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `name` (`name`);
+  ADD KEY `name` (`name`),
+  ADD KEY `id_state` (`id_state`);
 
 --
 -- Indexes for table `division_type`
@@ -1116,7 +1227,10 @@ ALTER TABLE `division_type`
 -- Indexes for table `entity`
 --
 ALTER TABLE `entity`
-  ADD PRIMARY KEY (`id_entity`);
+  ADD PRIMARY KEY (`id_entity`),
+  ADD KEY `id_country` (`id_country`),
+  ADD KEY `id_division` (`id_division`),
+  ADD KEY `id_state` (`id_state`);
 
 --
 -- Indexes for table `follow`
@@ -1262,7 +1376,7 @@ ALTER TABLE `criminal_organization`
 -- AUTO_INCREMENT for table `division`
 --
 ALTER TABLE `division`
-  MODIFY `id` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `division_type`
@@ -1274,7 +1388,7 @@ ALTER TABLE `division_type`
 -- AUTO_INCREMENT for table `entity`
 --
 ALTER TABLE `entity`
-  MODIFY `id_entity` smallint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_entity` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `follow`
@@ -1381,6 +1495,20 @@ ALTER TABLE `user`
 --
 ALTER TABLE `criminal_organization`
   ADD CONSTRAINT `criminal_organization_ibfk_1` FOREIGN KEY (`id_country_origin`) REFERENCES `country` (`id`);
+
+--
+-- Limitadores para a tabela `division`
+--
+ALTER TABLE `division`
+  ADD CONSTRAINT `division_ibfk_1` FOREIGN KEY (`id_state`) REFERENCES `state` (`id`);
+
+--
+-- Limitadores para a tabela `entity`
+--
+ALTER TABLE `entity`
+  ADD CONSTRAINT `entity_ibfk_1` FOREIGN KEY (`id_country`) REFERENCES `country` (`id`),
+  ADD CONSTRAINT `entity_ibfk_2` FOREIGN KEY (`id_division`) REFERENCES `division` (`id`),
+  ADD CONSTRAINT `entity_ibfk_3` FOREIGN KEY (`id_state`) REFERENCES `state` (`id`);
 
 --
 -- Limitadores para a tabela `follow`
