@@ -1,0 +1,21 @@
+CREATE FUNCTION dbo.fnCalculaTempo 
+(
+    @antes DATETIME, @depois DATETIME
+)
+RETURNS VARCHAR(20)
+AS
+BEGIN
+    DECLARE @temp DATETIME;
+    IF (@antes > @depois)
+    BEGIN
+        SET @temp = @antes;
+        SET @antes = @depois;
+        SET @depois = @temp;
+    END
+    RETURN  CASE WHEN @temp IS NULL THEN '' ELSE '-' END
+            + CASE WHEN DATEDIFF(DAY, @antes, @depois) <> 0 THEN CONVERT(VARCHAR, DATEDIFF(DAY, @antes, @depois)) + 'd ' ELSE '' END
+            + RIGHT('00' + CONVERT(VARCHAR, DATEDIFF(HOUR, @antes, @depois) % 24), 2) + ':'
+            + RIGHT('00' + CONVERT(VARCHAR, DATEDIFF(MINUTE, @antes, @depois) % 60), 2) + ':'
+            + RIGHT('00' + CONVERT(VARCHAR, DATEDIFF(SECOND, @antes, @depois) % 60), 2);
+END
+GO
