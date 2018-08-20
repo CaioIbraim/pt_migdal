@@ -1,0 +1,43 @@
+--Querie base
+SELECT 
+regiao, 
+municipio, 
+ano, 
+mes, 
+tipo, 
+ocorrencias, 
+SUM(ocorrencias) 
+	FROM `vw_isp` 
+WHERE 
+ano = '2017' and tipo = 'ameaca' GROUP BY ano,mes,tipo ORDER BY ano, mes, tipo ASC 
+
+
+
+---- Total de ocorrencias por mês, ano e tipo
+SELECT 
+regiao, 
+municipio, 
+ano, 
+mes, 
+tipo, 
+SUM(ocorrencias) AS total_ocorrencias
+	FROM `vw_isp` 
+WHERE 
+ano = '2017' and tipo = 'ameaca' 
+GROUP BY ano,mes,tipo 
+
+
+
+---- Total de ocorrencias por ano, agrupado pelo tipo
+
+SELECT 
+regiao, 
+municipio, 
+ano, 
+mes, 
+tipo, 
+SUM(ocorrencias) AS total_ocorrencias
+	FROM `vw_isp` 
+WHERE 
+ano = '2017' 
+GROUP BY tipo, mes 
