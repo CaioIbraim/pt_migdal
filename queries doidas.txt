@@ -13,7 +13,7 @@ ano = '2017' and tipo = 'ameaca' GROUP BY ano,mes,tipo ORDER BY ano, mes, tipo A
 
 
 
----- Total de ocorrencias por mês, ano e tipo
+---- Total de ocorrencias por mÃªs, ano e tipo
 SELECT 
 regiao, 
 municipio, 
@@ -40,4 +40,18 @@ SUM(ocorrencias) AS total_ocorrencias
 	FROM `vw_isp` 
 WHERE 
 ano = '2017' 
-GROUP BY tipo, mes 
+GROUP BY tipo, mes
+
+
+--- Total de ocorrencias por ano
+
+
+SELECT 
+municipio, 
+ano, 
+tipo, 
+SUM(ocorrencias) AS total_ocorrencias
+	FROM `vw_isp` 
+WHERE 
+tipo = 'ameaca' 
+GROUP BY ano,tipo  
